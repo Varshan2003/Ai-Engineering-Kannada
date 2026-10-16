@@ -130,6 +130,29 @@ print(response.response)
 | `user` | The human | The question or instruction. | `"What is AI?"` |
 | `assistant` | The model | The AI's previous replies. We add these back into the list so the model remembers what it said. | `"AI is the simulation of human intelligence..."` |
 
+### Each role in simple words
+
+**1. `system`: the rules**
+- Written by **you, the developer**, before the conversation starts.
+- Sets the AI's personality, tone, rules and answer format.
+- Usually first in the list, and only once. The end user doesn't see it, but it shapes every answer.
+
+**2. `user`: the question**
+- Written by **the person using the app**.
+- The actual question or instruction. A new `user` message is added every time the user types something.
+
+**3. `assistant`: the AI's past answers**
+- Written by **the model**. Your code adds its replies back into the list.
+- Gives the AI memory of what it already said. The model itself is *stateless*, so without these messages it forgets its earlier answers (see [section 5](#5-building-a-chatbot-with-memory--chat_botpy)).
+
+### Analogy
+
+| Role | Who writes it | Analogy |
+|------|---------------|---------|
+| `system` | Developer | The job description given to an employee |
+| `user` | Human | The customer's question |
+| `assistant` | AI | The employee's earlier replies, kept on record |
+
 ### Example — [roles.py](roles.py)
 
 ```python
