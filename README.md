@@ -2,6 +2,12 @@
 
 This repository contains AI course materials and learning resources shared in Kannada for beginners and learners who want to understand AI and engineering concepts in a simple way.
 
+## Course videos
+
+[![Watch the course on YouTube](https://img.shields.io/badge/YouTube-Watch%20the%20course%20playlist-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/playlist?list=PLEGzkK9VVrK8)
+
+▶️ **Playlist:** <https://youtube.com/playlist?list=PLEGzkK9VVrK8>
+
 ## Overview
 
 The goal of this repo is to organize learning content, slides, PDFs, and future course episodes in one place.
