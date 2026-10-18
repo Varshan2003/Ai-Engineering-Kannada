@@ -12,6 +12,10 @@ This repository contains AI course materials and learning resources shared in Ka
 
 The goal of this repo is to organize learning content, slides, PDFs, and future course episodes in one place.
 
+## Curriculum
+
+The course currently covers prompt engineering, tool calling, how Transformers work, LangChain, RAG and ReAct agents, across 10 episodes. See the full plan in [CURRICULUM.md](CURRICULUM.md).
+
 ## Repository structure
 
 - `Episode 1/` - Initial course material and introductory content
@@ -22,6 +26,9 @@ The goal of this repo is to organize learning content, slides, PDFs, and future 
   - `first_ai_program.py` - One-shot text generation with `ollama.generate()`
   - `roles.py` - Using `system` and `user` message roles with `ollama.chat()`
   - `chat_bot.py` - A terminal chatbot that remembers the conversation history
+- `Episode 3/` - Prompt engineering
+  - `NOTES.md` - Theory notes: the five building blocks of a prompt, zero-shot vs few-shot, chain-of-thought, prompt checklist, glossary
+  - `prompts.py` - One prompt improved step by step, plus zero-shot, few-shot and think-first examples
 
 ## Getting started (Episode 2)
 
