@@ -18,8 +18,8 @@ A beginner-friendly path from "what is AI?" to building RAG apps and AI agents. 
 |---|---------|----------------|--------|
 | 1 | AI Basics | — | ✅ Done |
 | 2 | Running Local AI with Ollama | A chatbot with memory | ✅ Done |
-| 3 | Prompt Engineering | A prompt playground | Next |
-| 4 | Tool Calling | A bot that uses a calculator and a weather tool | Planned |
+| 3 | Prompt Engineering | A prompt playground | ✅ Done |
+| 4 | Tool Calling | A bot that uses a calculator and a weather tool | Next |
 | 5 | How LLMs Work: Transformers | A toy attention calculation | Planned |
 | 6 | LangChain Basics | The Episode 2 chatbot rebuilt with LangChain | Planned |
 | 7 | Embeddings & Semantic Search | Search that understands meaning | Planned |
@@ -43,7 +43,9 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 
 ## Module 2 — Talking to LLMs well
 
-### Episode 3 — Prompt Engineering
+### Episode 3 — Prompt Engineering ✅
+📄 [Episode 3 notes](<Episode 3/NOTES.md>) · Programs: `prompts.py`
+
 **Goal:** get reliable, high-quality answers by writing better prompts.
 
 - What a good prompt contains: role, task, context, format and constraints
@@ -55,7 +57,6 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 - Prompt templates with Python f-strings
 - Common failures: vague prompts, hallucination, prompt injection
 
-**Programs:** `zero_vs_few_shot.py`, `temperature_test.py`, `prompt_templates.py`
 **Exercise:** write a prompt that turns any paragraph into a 3-question quiz in the same format every time.
 
 ### Episode 4 — Tool Calling (Function Calling)

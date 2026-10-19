@@ -4,6 +4,8 @@ This repository contains AI course materials and learning resources shared in Ka
 
 ## Course videos
 
+[![Generative AI in Kannada — watch the course on YouTube](assets/course-thumbnail.png)](https://youtube.com/playlist?list=PLEGzkK9VVrK8)
+
 [![Watch the course on YouTube](https://img.shields.io/badge/YouTube-Watch%20the%20course%20playlist-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/playlist?list=PLEGzkK9VVrK8)
 
 ▶️ **Playlist:** <https://youtube.com/playlist?list=PLEGzkK9VVrK8>
@@ -29,6 +31,7 @@ The course currently covers prompt engineering, tool calling, how Transformers w
 - `Episode 3/` - Prompt engineering
   - `NOTES.md` - Theory notes: the five building blocks of a prompt, zero-shot vs few-shot, chain-of-thought, prompt checklist, glossary
   - `prompts.py` - One prompt improved step by step, plus zero-shot, few-shot and think-first examples
+- `assets/` - Images used in this README (course thumbnail)
 
 ## Getting started (Episode 2)
 
