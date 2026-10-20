@@ -4,7 +4,7 @@ This repository contains AI course materials and learning resources shared in Ka
 
 ## Course videos
 
-[![Generative AI in Kannada — watch the course on YouTube](assets/course-thumbnail.jpg)](https://youtube.com/playlist?list=PLEGzkK9VVrK8)
+<a href="https://youtube.com/playlist?list=PLEGzkK9VVrK8"><img src="assets/course-thumbnail.jpg" alt="AI Engineering in Kannada — watch the course on YouTube" width="50%"></a>
 
 [![Watch the course on YouTube](https://img.shields.io/badge/YouTube-Watch%20the%20course%20playlist-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/playlist?list=PLEGzkK9VVrK8)
 
