@@ -16,7 +16,7 @@ The goal of this repo is to organize learning content, slides, PDFs, and future 
 
 ## Curriculum
 
-The course currently covers prompt engineering, tool calling, how Transformers work, LangChain, RAG and ReAct agents, across 10 episodes. See the full plan in [CURRICULUM.md](CURRICULUM.md).
+The course covers running local LLMs with Ollama, prompt engineering, LangChain (prompt templates, runnables and chains), tool calling, how Transformers work, RAG and ReAct agents, across 12 episodes. Episodes 1–6 are out now. See the full plan in [CURRICULUM.md](CURRICULUM.md).
 
 ## Repository structure
 
@@ -31,6 +31,16 @@ The course currently covers prompt engineering, tool calling, how Transformers w
 - `Episode 3/` - Prompt engineering
   - `NOTES.md` - Theory notes: the five building blocks of a prompt, zero-shot vs few-shot, chain-of-thought, prompt checklist, glossary
   - `prompts.py` - One prompt improved step by step, plus zero-shot, few-shot and think-first examples
+- `Episode 4/` - LangChain basics
+  - `01_langchain_intro.py` - Calling a local model through LangChain's `ChatOllama`
+  - `02_langchain_roles.py` - System and user messages in LangChain
+  - `03_temperature.py` - The same question at different temperatures
+- `Episode 5/` - Prompt templates, runnables and chains
+  - `NOTES.md` - Theory notes: `ChatPromptTemplate`, Runnables, `StrOutputParser`, chains with `|`, streaming, glossary
+  - `01_prompt_templates.py`, `02_runnables.py`, `03_sequences.py`
+- `Episode 6/` - `RunnableSequence`, `RunnableParallel` and `RunnablePassthrough`
+  - `NOTES.md` - Theory notes: what `|` builds, running chains in parallel, `.assign()`, glossary
+  - `01_runnable_sequence.py`, `02_runnable_paralle.py`, `03_runnable_passthrough.py`
 - `assets/` - Images used in this README (course thumbnail)
 
 ## Getting started (Episode 2)
