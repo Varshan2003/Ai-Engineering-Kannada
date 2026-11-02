@@ -1,0 +1,9 @@
+# Install with: pip install -r requirements.txt
+# The Ollama app must be installed separately: https://ollama.com/download
+
+# Episode 2 and 3
+ollama>=0.6.3
+
+# Episode 4 onwards
+langchain-ollama>=1.1.0
+langchain-core>=1.6.12
