@@ -16,7 +16,7 @@ The goal of this repo is to organize learning content, slides, PDFs, and future 
 
 ## Curriculum
 
-The course covers running local LLMs with Ollama, prompt engineering, LangChain (prompt templates, runnables and chains), tool calling, how Transformers work, RAG and ReAct agents, across 12 episodes. Episodes 1–6 are out now. See the full plan in [CURRICULUM.md](CURRICULUM.md).
+The course covers running local LLMs with Ollama, prompt engineering, LangChain (prompt templates, runnables, chains and structured output), cloud LLMs with Groq and AWS Bedrock, RAG, tool calling, how Transformers work and ReAct agents, across 16 episodes. Episodes 1–8 are out now. See the full plan in [CURRICULUM.md](CURRICULUM.md).
 
 ## Repository structure
 
