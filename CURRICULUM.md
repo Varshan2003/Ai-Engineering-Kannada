@@ -5,7 +5,7 @@ A beginner-friendly path from "what is AI?" to building RAG apps and AI agents. 
 **How this course works**
 
 - **Local first.** Episodes run on your own computer with [Ollama](https://ollama.com), so there's no API key and no cost. From Episode 8 you can also use cloud models (Groq, AWS Bedrock) with the same code.
-- **Understand, then build.** After calling models directly from Python, you switch to **LangChain** early and use it for the rest of the course. Key ideas such as RAG, tool calling, how Transformers work and the ReAct agent loop are explained from the ground up, so nothing feels like magic.
+- **Understand, then build.** After calling models directly from Python, you switch to **LangChain** early and use it for the rest of the course. Key ideas such as RAG, tool calling, the ReAct agent loop and LangGraph are explained from the ground up, so nothing feels like magic.
 - **Code with every episode.** Each episode folder has notes (`NOTES.md`) and small, runnable Python programs.
 
 **What you need:** a laptop with 8 GB+ RAM, Python 3.10 or newer, and Ollama installed (setup is in [Episode 2](<Episode 2/NOTES.md>)). For Episode 8, a free Groq account and, optionally, an AWS account.
@@ -24,14 +24,22 @@ A beginner-friendly path from "what is AI?" to building RAG apps and AI agents. 
 | 6 | Sequence, Parallel & Passthrough | Chains that branch out and pass data along | ✅ Done |
 | 7 | Structured Output with Pydantic | Extracting data into Python objects and lists | ✅ Done |
 | 8 | Using Cloud LLMs: Groq & AWS Bedrock | The same LangChain code on cloud models | ✅ Done |
-| 9 | The RAG Pipeline | A tiny RAG app over a few paragraphs, in plain Python | Next |
-| 10 | Document Loaders & Text Splitters | Loading and chunking text files, PDFs and web pages | Planned |
-| 11 | Embeddings & Vector Stores | Search that understands meaning | Planned |
-| 12 | RAG with LangChain | "Chat with your PDF" | Planned |
-| 13 | Better RAG | A RAG app with citations and better retrieval | Planned |
-| 14 | Tool Calling | A bot that uses a calculator and a weather tool | Planned |
-| 15 | How LLMs Work: Transformers | A toy attention calculation | Planned |
-| 16 | ReAct Agents from Scratch | An agent that thinks, acts and observes | Planned |
+| 9 | The RAG Pipeline | A tiny RAG app over a few paragraphs, in plain Python | ✅ Done |
+| 10 | Document Loaders & Text Splitters | Loading and chunking text files, PDFs and web pages | ✅ Done |
+| 11 | Embeddings & Vector Stores | Search that understands meaning | ✅ Done |
+| 12 | RAG with LangChain | "Chat with your PDF" | ✅ Done |
+| 13 | Conversational RAG: Chat History & Memory | A PDF chatbot that understands follow-up questions | Next |
+| 14 | Advanced RAG | Hybrid search, re-ranking and query rewriting | Planned |
+| 15 | Tool Calling | A bot that uses a calculator and a weather tool | Planned |
+| 16 | What AI Agents Are: ReAct & the Agent Loop | An agent that thinks, acts and observes | Planned |
+| 17 | LangGraph Basics | Your first graph with state, nodes and edges | Planned |
+| 18 | LangGraph: Routing, Loops & Human-in-the-Loop | An agent that branches, retries and asks for approval | Planned |
+| 19 | Agentic RAG | An agent that decides when to search your documents | Planned |
+| 20 | Multi-Agent Systems | A team of agents that work together | Planned |
+| 21 | MCP (Model Context Protocol) | Your own MCP server, used by an agent | Planned |
+| 22 | Deploying an AI App | Your RAG/agent app online with FastAPI + Streamlit or AWS | Planned |
+| 23 | Capstone Project 1 | A full agent app built from scratch | Planned |
+| 24 | Capstone Project 2 / AI Career Roadmap | A second project, or a "what next" finale | Planned |
 
 ---
 
@@ -59,7 +67,7 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 - **Chain-of-thought:** asking the model to reason step by step
 - Writing strong **system prompts**: persona, rules, tone
 - Using delimiters (`"""`, `###`, XML-style tags) to separate instructions from data
-- Generation settings: **temperature**, `top_p` and `num_predict` (max tokens), via `options={...}` in Ollama. Episode 15 explains *why* these work
+- Generation settings: **temperature**, `top_p` and `num_predict` (max tokens), via `options={...}` in Ollama
 - Prompt templates with Python f-strings
 - Common failures: vague prompts, hallucination, prompt injection
 
@@ -202,25 +210,39 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 **Programs:** `rag_under_the_hood.py`, `lc_rag.py`
 **Project:** **Chat with your PDF.** Ask questions about a textbook chapter or a government circular.
 
-### Episode 13 — Better RAG
-**Goal:** fix the common reasons RAG gives bad answers.
+### Episode 13 — Conversational RAG: Chat History & Memory
+**Goal:** turn the Episode 12 chatbot into one that remembers the conversation.
 
-- Showing **sources / citations** in answers, using structured output (Episode 7)
+- Why the Episode 12 bot fails on follow-ups: "Who is the cardiologist?" → "What are **his** timings?"
+- Keeping **chat history** as a list of messages (the same idea as the Episode 2 chatbot)
+- `MessagesPlaceholder` in `ChatPromptTemplate` to put the history into the prompt
+- **History-aware retrieval:** rewriting the follow-up into a standalone question before searching
+- Keeping history short: trimming old messages so the prompt doesn't grow forever
+- Cleaning up the Episode 12 code: building the vector store only once, sending only `page_content` as context, and a proper `exit` command
+
+**Programs:** `conversational_rag.py`
+**Exercise:** have a 5-question conversation with the handbook where every question after the first uses "he", "she", "it" or "that".
+
+### Episode 14 — Advanced RAG
+**Goal:** fix the common reasons RAG gives bad answers, the things most beginner tutorials skip.
+
+- Debugging RAG: checking **retrieval** first, before blaming the LLM
 - Using **metadata** (page number, file name) and filtering on it
-- **Hybrid search:** keyword (BM25) + semantic
-- **Re-ranking** retrieved chunks
-- **Query rewriting:** improving the user's question before searching
-- Chatting over documents with memory (combining Episodes 2 and 12)
+- Showing **sources / citations** in answers, using structured output (Episode 7)
+- **Hybrid search:** keyword (BM25) + semantic, combined with `EnsembleRetriever`
+- **Re-ranking:** retrieving many chunks, then keeping only the best few
+- **Query rewriting:** improving the user's question before searching (multi-query)
 - Working with Kannada and multilingual text: choosing an embedding model that supports it
 
-**Programs:** `rag_with_citations.py`, `hybrid_search.py`
+**Programs:** `rag_with_citations.py`, `hybrid_search.py`, `reranking.py`, `query_rewriting.py`
+**Exercise:** find a question the Episode 12 bot gets wrong, and fix it using one of these techniques.
 
 ---
 
-## Module 6 — Tools and what's inside an LLM
+## Module 6 — Tools and Agents
 
-### Episode 14 — Tool Calling (Function Calling)
-**Goal:** let the model call your Python functions.
+### Episode 15 — Tool Calling (Function Calling)
+**Goal:** let the model call your Python functions. This is the link between LLMs and agents.
 
 - Why LLMs can't do live math, dates or web lookups on their own
 - Describing a tool to the model (name, description, parameters) with LangChain's `@tool`
@@ -232,43 +254,116 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 **Programs:** `01_calculator_tool.py`, `02_multi_tool_bot.py`
 **Exercise:** add a `get_current_time(city)` tool to your LangChain chatbot.
 
-### Episode 15 — How LLMs Work: Transformers
-**Goal:** understand what happens inside an LLM, in simple words with pictures, without heavy math.
-
-- The big idea: an LLM **predicts the next token**, one token at a time
-- **Tokens and tokenization:** why "token" isn't the same as "word", and why Kannada text often uses more tokens than English
-- **Token embeddings:** each token becomes a list of numbers that captures its meaning (like the sentence embeddings in Episode 11)
-- **Positional encoding:** how the model knows word order
-- **Self-attention:** each word "looks at" the other words to understand context (e.g. "bank" in "river bank" vs "bank loan"), with a simple explanation of Query, Key and Value
-- **Multi-head attention** and stacking many **layers**
-- **Encoder vs decoder:** BERT vs GPT-style models; why chat models are decoder-only
-- How a model is trained: **pre-training → instruction tuning → RLHF**, which explains why chat models follow instructions
-- Linking back to earlier episodes:
-  - **Temperature** is how "random" the pick of the next token is (Episodes 3 and 4)
-  - The **context window** is how many tokens attention can look at, which is why long chats get slow (Episode 2) and why RAG sends only a few chunks (Episode 9)
-  - **Structured output** and **tool calls** are just text the model was trained to produce in a special format (Episodes 7 and 14)
-  - **Parameters** (3B and 8B vs hundreds of billions) and **quantization** (Q4) explain Ollama model sizes, and why cloud models are stronger (Episode 8)
-  - Cloud providers charge **per token** (Episode 8)
-- The paper that started it: *Attention Is All You Need* (2017)
-
-**Programs:** `tokens_demo.py` (see how text splits into tokens), `attention_toy.py` (self-attention on 3 words with NumPy)
-**Exercise:** count the tokens in the same sentence written in English and in Kannada, and explain the difference.
-
----
-
-## Module 7 — Agents
-
-### Episode 16 — ReAct Agents from Scratch
+### Episode 16 — What AI Agents Are: ReAct & the Agent Loop
 **Goal:** understand how an AI agent works by writing one in about 100 lines of Python.
 
 - What an **agent** is: an LLM in a loop that decides which tool to use next
+- Chains vs agents: a fixed path vs the model choosing the path
 - The **ReAct** pattern: **Thought → Action → Observation**, repeated until the agent reaches a **Final Answer**
-- Writing the ReAct loop by hand using tool calling (Episode 14)
-- Giving the agent RAG as a tool, so it decides when to search (agentic RAG)
+- Writing the agent loop by hand using tool calling (Episode 15)
 - Safety limits: maximum steps, handling errors, avoiding infinite loops
 
 **Programs:** `react_agent.py`
-**Project:** an agent that answers questions using a calculator, a Wikipedia lookup and your document search.
+**Exercise:** give the agent a calculator and a Wikipedia lookup, and ask a question that needs both.
+
+---
+
+## Module 7 — LangGraph
+
+### Episode 17 — LangGraph Basics
+**Goal:** learn LangGraph, the industry-standard framework for building agents.
+
+- Why LangGraph: the hand-written loop from Episode 16 gets messy as agents grow
+- **State:** the shared data every step can read and update (`TypedDict`, `MessagesState`)
+- **Nodes:** plain Python functions that do one job
+- **Edges:** connecting nodes, with `START` and `END`
+- Building, compiling and running a graph, and drawing it as a picture
+- Rebuilding the Episode 16 agent with `ToolNode` and `tools_condition`
+
+**Programs:** `01_first_graph.py`, `02_langgraph_agent.py`
+
+### Episode 18 — LangGraph: Conditional Routing, Loops & Human-in-the-Loop
+**Goal:** build agents that make decisions, retry, and stop to ask a human.
+
+- **Conditional edges:** choosing the next node based on the state
+- **Loops:** going back to an earlier node until a check passes, with a step limit
+- **Checkpointers and memory:** saving state between runs with a `thread_id`
+- **Human-in-the-loop:** pausing with `interrupt()` for approval before an important action, then resuming
+- Streaming each step of the graph to see what the agent is doing
+
+**Programs:** `01_routing.py`, `02_loops.py`, `03_human_in_the_loop.py`
+**Exercise:** an agent that drafts an email and waits for your "yes" before "sending" it.
+
+### Episode 19 — Agentic RAG
+**Goal:** tie the RAG section to agents: an agent that decides *when* and *how* to search.
+
+- Plain RAG vs agentic RAG: always searching vs searching only when needed
+- Giving the agent the Episode 12–14 retriever as a **tool**
+- **Grading** retrieved chunks and **rewriting the question** when they aren't relevant
+- Choosing between several sources: the hospital handbook, the web, or no search at all
+
+**Programs:** `agentic_rag.py`
+**Project:** a hospital assistant that answers from the handbook, and says so when it needs another source.
+
+### Episode 20 — Multi-Agent Systems
+**Goal:** split a big job between several specialised agents.
+
+- When one agent isn't enough: too many tools, too many instructions
+- The **supervisor** pattern: one agent hands work to the others
+- **Handoffs** between agents, and sharing state between them
+- Common patterns: researcher + writer, planner + workers
+- The costs: more LLM calls, more tokens, harder debugging
+
+**Programs:** `supervisor_agents.py`
+**Project:** a research team: one agent searches, one writes, one reviews.
+
+---
+
+## Module 8 — MCP and Deployment
+
+### Episode 21 — MCP (Model Context Protocol)
+**Goal:** connect agents to tools and data in a standard way.
+
+- What MCP is and why it exists: one standard instead of a custom integration for every tool
+- **Servers, clients and hosts**; tools, resources and prompts
+- Writing your own MCP server in Python
+- Using MCP servers from a LangChain / LangGraph agent with `langchain-mcp-adapters`
+- Using MCP servers in apps like Claude Desktop and VS Code
+- Security: only connecting servers you trust
+
+**Programs:** `mcp_server.py`, `mcp_agent.py`
+
+### Episode 22 — Deploying an AI App
+**Goal:** put your app online so others can use it.
+
+- Turning a chain or agent into an API with **FastAPI**
+- A simple chat UI with **Streamlit**
+- Streaming answers to the UI
+- Keeping secrets safe in production (no keys in code)
+- Deploying on **AWS**, building on the Bedrock setup from Episode 8
+- Watching costs and setting limits
+
+**Programs:** `api.py`, `app.py`
+**Project:** the hospital RAG chatbot, live on the internet.
+
+---
+
+## Module 9 — Capstone
+
+### Episode 23 — Capstone Project 1: A Full Agent App from Scratch
+**Goal:** use everything from the course in one real project.
+
+- Planning the app: what it does, which tools and data it needs
+- Building it step by step: RAG, tools, a LangGraph agent, memory and a UI
+- Testing it with real questions and fixing what breaks
+- Deploying it (Episode 22)
+
+### Episode 24 — Capstone Project 2, or AI Career Roadmap & What Next
+**Goal:** finish the course properly.
+
+- Either a second capstone project, or:
+- An **AI engineer career roadmap**: what to learn next, building a portfolio, and the projects worth showing
+- A recap of the whole course, and where to go from here
 
 ---
 
@@ -285,8 +380,11 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 | AWS Bedrock (`langchain-openai` + Bedrock Mantle) | Cloud models from many providers | 8 |
 | `langchain-community`, `pypdf` | Document loaders | 10 |
 | `langchain-text-splitters` | Chunking documents | 10 |
-| `nomic-embed-text` | Embeddings | 11 |
+| `embeddinggemma-2` (via Ollama) | Embeddings | 11 |
 | ChromaDB | Vector database | 11 |
-| NumPy, `tiktoken` | Toy attention and token demos | 15 |
+| `rank_bm25` | Keyword search for hybrid RAG | 14 |
+| LangGraph (`langgraph`) | Agents as graphs | 17 |
+| MCP (`mcp`, `langchain-mcp-adapters`) | Connecting agents to tools | 21 |
+| FastAPI, Streamlit | Serving and UI for deployed apps | 22 |
 
-> More episodes (agents with LangChain, LangGraph, MCP, evaluation and deployment) will be added after Episode 16. This curriculum may change as the course grows. Libraries like LangChain change quickly, so code in each episode is written against the version current at recording time.
+> This curriculum may change as the course grows. Libraries like LangChain change quickly, so code in each episode is written against the version current at recording time.
