@@ -1,9 +1,13 @@
-# Install with: pip install -r requirements.txt
-# The Ollama app must be installed separately: https://ollama.com/download
+langchain-openai
+langchain-groq
+python-dotenv>=1.2.4
 
-# Episode 2 and 3
-ollama>=0.6.3
+langchain-unstructured>=1.0.1
+unstructured-client>=0.47.0
+unstructured[pdf]>=0.18.32
+python-magic>=0.4.27
+langchain-text-splitters>=1.1.3
 
-# Episode 4 onwards
-langchain-ollama>=1.1.0
-langchain-core>=1.6.12
+langchain-chroma>=1.1.0
+chromadb>=1.5.9
+
