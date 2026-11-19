@@ -7,6 +7,7 @@ A beginner-friendly path from "what is AI?" to building RAG apps and AI agents. 
 - **Local first.** Episodes run on your own computer with [Ollama](https://ollama.com), so there's no API key and no cost. From Episode 8 you can also use cloud models (Groq, AWS Bedrock) with the same code.
 - **Understand, then build.** After calling models directly from Python, you switch to **LangChain** early and use it for the rest of the course. Key ideas such as RAG, tool calling, the ReAct agent loop and LangGraph are explained from the ground up, so nothing feels like magic.
 - **Code with every episode.** Each episode folder has notes (`NOTES.md`) and small, runnable Python programs.
+- **Only current LangChain packages.** We use `langchain-core`, the official partner packages (`langchain-ollama`, `langchain-openai`, `langchain-groq`, `langchain-chroma`, `langchain-unstructured`, `langchain-text-splitters`), `langchain` v1 and LangGraph. We **don't** use `langchain-community` (being sunset) or `langchain-classic` (old chains and memory). Where those used to provide a ready-made class, we write the few lines ourselves. When an older tutorial shows a deprecated class, the episode names it and shows what replaced it.
 
 **What you need:** a laptop with 8 GB+ RAM, Python 3.10 or newer, and Ollama installed (setup is in [Episode 2](<Episode 2/NOTES.md>)). For Episode 8, a free Groq account and, optionally, an AWS account.
 
@@ -33,7 +34,7 @@ A beginner-friendly path from "what is AI?" to building RAG apps and AI agents. 
 | 15 | Tool Calling | A bot that uses a calculator and a weather tool | Planned |
 | 16 | What AI Agents Are: ReAct & the Agent Loop | An agent that thinks, acts and observes | Planned |
 | 17 | LangGraph Basics | Your first graph with state, nodes and edges | Planned |
-| 18 | LangGraph: Routing, Loops & Human-in-the-Loop | An agent that branches, retries and asks for approval | Planned |
+| 18 | LangGraph: Routing, Memory & Human-in-the-Loop | An agent that branches, remembers and asks for approval | Planned |
 | 19 | Agentic RAG | An agent that decides when to search your documents | Planned |
 | 20 | Multi-Agent Systems | A team of agents that work together | Planned |
 | 21 | MCP (Model Context Protocol) | Your own MCP server, used by an agent | Planned |
@@ -166,12 +167,9 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 **Goal:** do the first two RAG steps, loading and splitting, on your own documents.
 
 - LangChain's **`Document`**: `page_content` (the text) + `metadata` (source file, page number …)
-- **Document loaders** (`langchain-community`):
-  - `TextLoader` for `.txt` files
-  - `PyPDFLoader` for PDFs: one `Document` per page
-  - `WebBaseLoader` for web pages
-  - `CSVLoader` for spreadsheets: one `Document` per row
-  - `DirectoryLoader` for a whole folder of files
+- **`UnstructuredLoader`** (`langchain-unstructured`): one loader for PDFs, web pages, `.txt`, `.docx` and more
+  - It returns one `Document` per **element** (title, paragraph, list item, table cell), each with a `category` and `page_number`
+  - The older one-format loaders (`PyPDFLoader`, `WebBaseLoader`, `CSVLoader` …) live in `langchain-community`, which is being sunset, so we don't use them
 - `.load()` vs `.lazy_load()` for large files
 - Why we split: context window limits, better search, lower cost
 - **Text splitters** (`langchain-text-splitters`):
@@ -180,7 +178,7 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
   - `.split_documents()` keeps the metadata on every chunk
 - Splitting Kannada text: characters vs words
 
-**Programs:** `01_text_loader.py`, `02_pdf_loader.py`, `03_web_loader.py`, `04_text_splitter.py`
+📄 [Episode 10 notes](<Episode 10/NOTES.md>) · Programs: `document_loader.py`, `text_splitters.py`
 **Exercise:** load a PDF, print the number of pages and the metadata of page 1, then split it and compare the number of chunks for different `chunk_size` and `chunk_overlap` values.
 
 ### Episode 11 — Embeddings & Vector Stores
@@ -193,7 +191,7 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 - **Vector databases:** what they are, with a first look at **ChromaDB** through LangChain's `Chroma` vector store
 - Storing the chunks from Episode 10 and searching them with `.similarity_search()`
 
-**Programs:** `first_embedding.py`, `similarity.py`, `semantic_search.py`
+📄 [Episode 11 notes](<Episode 11/NOTES.md>) · Programs: `vector_embeddings.py`, `vector_store.py`
 **Exercise:** build a search over 20 FAQ sentences that finds the right answer even when the user words the question differently.
 
 ### Episode 12 — RAG with LangChain
@@ -207,34 +205,37 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
   - A RAG prompt that tells the model to say "I don't know" when the answer isn't in the documents
 - Running the same RAG chain on Ollama or on a cloud model (Episode 8)
 
-**Programs:** `rag_under_the_hood.py`, `lc_rag.py`
+📄 [Episode 12 notes](<Episode 12/NOTES.md>) · Programs: `chatbot.py`
 **Project:** **Chat with your PDF.** Ask questions about a textbook chapter or a government circular.
 
 ### Episode 13 — Conversational RAG: Chat History & Memory
-**Goal:** turn the Episode 12 chatbot into one that remembers the conversation.
+📄 [Episode 13 notes](<Episode 13/NOTES.md>) · Programs: `conversational_rag.py`
+
+**Goal:** turn the Episode 12 chatbot into one that remembers the conversation, using only `langchain-core` building blocks.
 
 - Why the Episode 12 bot fails on follow-ups: "Who is the cardiologist?" → "What are **his** timings?"
 - Keeping **chat history** as a list of messages (the same idea as the Episode 2 chatbot)
 - `MessagesPlaceholder` in `ChatPromptTemplate` to put the history into the prompt
-- **History-aware retrieval:** rewriting the follow-up into a standalone question before searching
-- Keeping history short: trimming old messages so the prompt doesn't grow forever
-- Cleaning up the Episode 12 code: building the vector store only once, sending only `page_content` as context, and a proper `exit` command
-
-**Programs:** `conversational_rag.py`
+- **History-aware retrieval:** rewriting the follow-up into a standalone question before searching, with a plain LCEL chain
+- Keeping history short with **`trim_messages()`**: trimming by tokens, always starting on a user message
+- Memory that survives a restart: saving the history to JSON with `messages_to_dict()` / `messages_from_dict()`
+- Bringing back **page numbers** as metadata, and showing the source pages under each answer
+- Cleaning up the Episode 12 code: building the vector store only once, sending only `page_content` as context, streaming, and `exit` / `history` / `clear` commands
+- **What about LangChain's memory classes?** `ConversationBufferMemory`, `create_history_aware_retriever` (now in `langchain-classic`), `RunnableWithMessageHistory` (deprecated) and the `langchain-community` chat-history stores all come up in older tutorials. LangChain now points to **LangGraph persistence** instead, which we use in Episode 18
 **Exercise:** have a 5-question conversation with the handbook where every question after the first uses "he", "she", "it" or "that".
 
 ### Episode 14 — Advanced RAG
 **Goal:** fix the common reasons RAG gives bad answers, the things most beginner tutorials skip.
 
 - Debugging RAG: checking **retrieval** first, before blaming the LLM
-- Using **metadata** (page number, file name) and filtering on it
+- Using **metadata** (the page numbers from Episode 13, file name) and filtering on it with Chroma's `filter=`
 - Showing **sources / citations** in answers, using structured output (Episode 7)
-- **Hybrid search:** keyword (BM25) + semantic, combined with `EnsembleRetriever`
-- **Re-ranking:** retrieving many chunks, then keeping only the best few
-- **Query rewriting:** improving the user's question before searching (multi-query)
+- **Hybrid search:** keyword search with `rank_bm25` + semantic search with Chroma, merged with **Reciprocal Rank Fusion**, written by hand in ~15 lines (the old `BM25Retriever` / `EnsembleRetriever` are in `langchain-community` / `langchain-classic`)
+- **Re-ranking:** retrieving many chunks, then keeping only the best few, with a local **cross-encoder** (`sentence-transformers`) or an LLM that scores each chunk with structured output
+- **Query rewriting (multi-query):** an LCEL chain that writes 3 versions of the question, searches with each and removes duplicates (replacing `MultiQueryRetriever`)
 - Working with Kannada and multilingual text: choosing an embedding model that supports it
 
-**Programs:** `rag_with_citations.py`, `hybrid_search.py`, `reranking.py`, `query_rewriting.py`
+**Programs:** `rag_with_citations.py`, `hybrid_search.py`, `reranking.py`, `multi_query.py`
 **Exercise:** find a question the Episode 12 bot gets wrong, and fix it using one of these techniques.
 
 ---
@@ -245,7 +246,7 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 **Goal:** let the model call your Python functions. This is the link between LLMs and agents.
 
 - Why LLMs can't do live math, dates or web lookups on their own
-- Describing a tool to the model (name, description, parameters) with LangChain's `@tool`
+- Describing a tool to the model (name, description, parameters) with `@tool` from `langchain_core.tools`
 - Giving tools to the model with `.bind_tools()` and reading `response.tool_calls`
 - The tool loop: the model asks for a tool → **your code runs it** → you send back a `ToolMessage` → the model answers
 - The new **`tool` role**, which adds to the 3 roles from Episode 2
@@ -279,19 +280,25 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 - **Edges:** connecting nodes, with `START` and `END`
 - Building, compiling and running a graph, and drawing it as a picture
 - Rebuilding the Episode 16 agent with `ToolNode` and `tools_condition`
+- The shortcut: **`create_agent()`** from `langchain` v1, a ready-made agent graph built on LangGraph (it replaces the older `create_react_agent` and `AgentExecutor`)
 
-**Programs:** `01_first_graph.py`, `02_langgraph_agent.py`
+**Programs:** `01_first_graph.py`, `02_langgraph_agent.py`, `03_create_agent.py`
 
-### Episode 18 — LangGraph: Conditional Routing, Loops & Human-in-the-Loop
-**Goal:** build agents that make decisions, retry, and stop to ask a human.
+### Episode 18 — LangGraph: Routing, Memory & Human-in-the-Loop
+**Goal:** build agents that make decisions, retry, remember conversations, and stop to ask a human.
 
 - **Conditional edges:** choosing the next node based on the state
 - **Loops:** going back to an earlier node until a check passes, with a step limit
-- **Checkpointers and memory:** saving state between runs with a `thread_id`
-- **Human-in-the-loop:** pausing with `interrupt()` for approval before an important action, then resuming
+- **Memory, the official way (LangGraph persistence):**
+  - **Short-term memory:** a checkpointer (`InMemorySaver`, or `SqliteSaver` from `langgraph-checkpoint-sqlite` to survive restarts) that saves the conversation per `thread_id`
+  - Several users or chats at once: one `thread_id` each
+  - Keeping long chats small: trimming or summarising old messages inside the graph
+  - **Long-term memory:** a `Store` for facts that last across threads ("my name is Ravi", "I prefer answers in Kannada")
+  - Rebuilding the Episode 13 hospital chatbot with a checkpointer instead of `chat_history.json`
+- **Human-in-the-loop:** pausing with `interrupt()` for approval before an important action, then resuming (this also needs a checkpointer)
 - Streaming each step of the graph to see what the agent is doing
 
-**Programs:** `01_routing.py`, `02_loops.py`, `03_human_in_the_loop.py`
+**Programs:** `01_routing.py`, `02_loops.py`, `03_memory.py`, `04_human_in_the_loop.py`
 **Exercise:** an agent that drafts an email and waits for your "yes" before "sending" it.
 
 ### Episode 19 — Agentic RAG
@@ -373,18 +380,22 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 |------|----------|--------------|
 | Python 3.10+ | Everything | 2 |
 | Ollama (`llama3.2`, `qwen3`) | Running LLMs locally | 2 |
-| LangChain (`langchain`, `langchain-ollama`) | Chat, chains, tools and RAG | 4 |
+| LangChain (`langchain-core`, `langchain-ollama`) | Chat, prompts, chains, messages, tools | 4 |
 | Pydantic | Structured output | 7 |
 | `python-dotenv` | Loading API keys from `.env` | 8 |
 | Groq (`langchain-groq`) | Fast cloud models with a free tier | 8 |
 | AWS Bedrock (`langchain-openai` + Bedrock Mantle) | Cloud models from many providers | 8 |
-| `langchain-community`, `pypdf` | Document loaders | 10 |
+| `langchain-unstructured`, `unstructured[pdf]` | Document loaders | 10 |
 | `langchain-text-splitters` | Chunking documents | 10 |
 | `embeddinggemma-2` (via Ollama) | Embeddings | 11 |
-| ChromaDB | Vector database | 11 |
+| ChromaDB (`langchain-chroma`) | Vector database | 11 |
 | `rank_bm25` | Keyword search for hybrid RAG | 14 |
-| LangGraph (`langgraph`) | Agents as graphs | 17 |
+| `sentence-transformers` | Local cross-encoder for re-ranking | 14 |
+| LangGraph (`langgraph`), `langchain` v1 (`create_agent`) | Agents as graphs | 17 |
+| `langgraph-checkpoint-sqlite` | Saving agent memory to disk | 18 |
 | MCP (`mcp`, `langchain-mcp-adapters`) | Connecting agents to tools | 21 |
 | FastAPI, Streamlit | Serving and UI for deployed apps | 22 |
+
+**Not used in this course:** `langchain-community` (being sunset; integrations are moving to partner packages) and `langchain-classic` (legacy chains, retrievers and memory such as `ConversationBufferMemory`, `EnsembleRetriever`, `MultiQueryRetriever`, `create_history_aware_retriever`). `RunnableWithMessageHistory` is also deprecated in favour of LangGraph persistence.
 
 > This curriculum may change as the course grows. Libraries like LangChain change quickly, so code in each episode is written against the version current at recording time.
