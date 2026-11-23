@@ -122,7 +122,9 @@ The metadata on each one includes `source`, `filename`, `filetype`, `page_number
 
 ### Other loaders you'll see
 
-`UnstructuredLoader` is a general tool. LangChain also has simpler loaders for one format each (in `langchain-community`):
+`UnstructuredLoader` is a general tool. LangChain also has simpler loaders for one format each (in `langchain-community`).
+
+> **Heads-up:** `langchain-community` is being sunset, so this course doesn't use these loaders. You'll still see them in older tutorials, so it helps to recognise them.
 
 | Loader | Reads | Gives you |
 |--------|-------|-----------|
