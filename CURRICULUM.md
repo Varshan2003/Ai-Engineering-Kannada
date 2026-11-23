@@ -211,17 +211,18 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 ### Episode 13 — Conversational RAG: Chat History & Memory
 📄 [Episode 13 notes](<Episode 13/NOTES.md>) · Programs: `conversational_rag.py`
 
-**Goal:** turn the Episode 12 chatbot into one that remembers the conversation, using only `langchain-core` building blocks.
+**Goal:** turn the Episode 12 chatbot into one that remembers the conversation, in a simple top-to-bottom script like Episode 12.
 
 - Why the Episode 12 bot fails on follow-ups: "Who is the cardiologist?" → "What are **his** timings?"
 - Keeping **chat history** as a list of messages (the same idea as the Episode 2 chatbot)
 - `MessagesPlaceholder` in `ChatPromptTemplate` to put the history into the prompt
-- **History-aware retrieval:** rewriting the follow-up into a standalone question before searching, with a plain LCEL chain
-- Keeping history short with **`trim_messages()`**: trimming by tokens, always starting on a user message
-- Memory that survives a restart: saving the history to JSON with `messages_to_dict()` / `messages_from_dict()`
-- Bringing back **page numbers** as metadata, and showing the source pages under each answer
+- **Rewriting the question:** a second chain turns the follow-up into a full question before searching
+- Keeping history short with **`trim_messages()`** (by tokens, always starting on a user message)
+- Memory that survives a restart: saving the history to a JSON file with `messages_to_dict()` / `messages_from_dict()`
+- **Citations:** keeping **page numbers** as metadata, showing them to the model, asking it to cite `[page 3]` after every fact, and reading them back with a regular expression
 - Cleaning up the Episode 12 code: building the vector store only once, sending only `page_content` as context, streaming, and `exit` / `history` / `clear` commands
-- **What about LangChain's memory classes?** `ConversationBufferMemory`, `create_history_aware_retriever` (now in `langchain-classic`), `RunnableWithMessageHistory` (deprecated) and the `langchain-community` chat-history stores all come up in older tutorials. LangChain now points to **LangGraph persistence** instead, which we use in Episode 18
+- **What about LangChain's memory classes?** `ConversationBufferMemory`, `create_history_aware_retriever` (`langchain-classic`), `RunnableWithMessageHistory` (deprecated) and the `langchain-community` chat-history stores come up in older tutorials. The modern way is **LangGraph persistence**, in Episode 18
+
 **Exercise:** have a 5-question conversation with the handbook where every question after the first uses "he", "she", "it" or "that".
 
 ### Episode 14 — Advanced RAG
@@ -229,7 +230,7 @@ Installing Ollama, `generate()` vs `chat()`, the `system` / `user` / `assistant`
 
 - Debugging RAG: checking **retrieval** first, before blaming the LLM
 - Using **metadata** (the page numbers from Episode 13, file name) and filtering on it with Chroma's `filter=`
-- Showing **sources / citations** in answers, using structured output (Episode 7)
+- **Stricter citations** with structured output (Episode 7): the exact quote + page for every fact, checked by your code (building on Episode 13's `[page 3]` citations)
 - **Hybrid search:** keyword search with `rank_bm25` + semantic search with Chroma, merged with **Reciprocal Rank Fusion**, written by hand in ~15 lines (the old `BM25Retriever` / `EnsembleRetriever` are in `langchain-community` / `langchain-classic`)
 - **Re-ranking:** retrieving many chunks, then keeping only the best few, with a local **cross-encoder** (`sentence-transformers`) or an LLM that scores each chunk with structured output
 - **Query rewriting (multi-query):** an LCEL chain that writes 3 versions of the question, searches with each and removes duplicates (replacing `MultiQueryRetriever`)
