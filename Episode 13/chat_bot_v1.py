@@ -87,6 +87,7 @@ while True:
     for doc in relevant_docs:
         page_number = doc.metadata.get("page_number", 0)
         context += f"[page {page_number}] \n {doc.page_content} \n\n"
+    print(context)
     response = ""
     for chunk in answer_chain.stream({"context": context, "chat_history" : chat_history, "question": search_query}):
         print(chunk, end = "", flush=True)
